@@ -1,17 +1,50 @@
 import { ConfigService } from '@nestjs/config';
 import type { Message } from '@prisma/client';
+import { ConversationContextService, ConversationContext } from '../conversation/conversation-context.service';
+import { LanguageDetectionService } from '../language/language-detection.service';
+import { ConversationMemoryService } from '../memory/conversation-memory.service';
 export interface AiResponse {
     text: string;
     intent?: string;
     orderData?: any;
     shouldFetchOrders?: boolean;
+    confidence?: number;
+    suggestedActions?: string[];
+    emotionalTone?: 'friendly' | 'professional' | 'empathetic' | 'enthusiastic';
+    followUpQuestions?: string[];
+    culturalAdaptations?: string[];
+    languageUsed?: string;
+    memoryInsights?: string[];
+    learningRecommendations?: string[];
 }
 export declare class GeminiService {
     private readonly configService;
+    private readonly conversationContextService;
+    private readonly languageDetectionService;
+    private readonly conversationMemoryService;
     private readonly logger;
     private readonly genAI;
-    constructor(configService: ConfigService);
-    generateResponse(userText: string, conversationHistory: Message[], productContext?: string, userOrders?: any[]): Promise<AiResponse>;
-    private buildPrompt;
-    private parseResponse;
+    constructor(configService: ConfigService, conversationContextService: ConversationContextService, languageDetectionService: LanguageDetectionService, conversationMemoryService: ConversationMemoryService);
+    generateResponse(userText: string, conversationHistory: Message[], productContext?: string, userOrders?: any[], conversationContext?: ConversationContext): Promise<AiResponse>;
+    private updateMemoryWithResponse;
+    private calculateEmotionalImpact;
+    private determineOutcome;
+    private extractTopicsFromResponse;
+    private mapEmotionalTone;
+    private calculateEmotionalIntensity;
+    private determineActionType;
+    private determineActionPriority;
+    private buildAdvancedPrompt;
+    private buildFlovoPersona;
+    private buildCustomerContext;
+    private buildStateContext;
+    private buildCulturalContext;
+    private buildMemoryContext;
+    private getRelationshipLevel;
+    private getLoyaltyStatus;
+    private applyCulturalAdaptation;
+    private parseAdvancedResponse;
+    private detectEmotionalTone;
+    private extractFollowUpQuestions;
+    private generateFallbackResponse;
 }

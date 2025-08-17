@@ -1,11 +1,21 @@
-import { IsNotEmpty, IsString, Matches } from 'class-validator';
+import { IsString, IsNotEmpty, Matches } from 'class-validator';
 
 export class ConnectBotDto {
   @IsString()
   @IsNotEmpty()
-  @Matches(/^\d+:[A-Za-z0-9_-]{35}$/, {
+  @Matches(/^\d+:[A-Za-z0-9_-]{35,}$/, {
     message:
-      'Invalid bot token format. Expected format: 123456789:ABC-DEF1234ghIkl-zyx57W2v1u123ew11',
+      'Invalid bot token format. Expected format: numbers:alphanumeric_with_dashes_underscores',
   })
-  token!: string;
+  token: string;
+}
+
+export class CreateBotDto {
+  @IsString()
+  @IsNotEmpty()
+  @Matches(/^\d+:[A-Za-z0-9_-]{35,}$/, {
+    message:
+      'Invalid bot token format. Expected format: numbers:alphanumeric_with_dashes_underscores',
+  })
+  token: string;
 }

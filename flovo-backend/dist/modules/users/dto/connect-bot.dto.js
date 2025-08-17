@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ConnectBotDto = void 0;
+exports.CreateBotDto = exports.ConnectBotDto = void 0;
 const class_validator_1 = require("class-validator");
 class ConnectBotDto {
     token;
@@ -18,9 +18,21 @@ exports.ConnectBotDto = ConnectBotDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.Matches)(/^\d+:[A-Za-z0-9_-]{35}$/, {
-        message: 'Invalid bot token format. Expected format: 123456789:ABC-DEF1234ghIkl-zyx57W2v1u123ew11',
+    (0, class_validator_1.Matches)(/^\d+:[A-Za-z0-9_-]{35,}$/, {
+        message: 'Invalid bot token format. Expected format: numbers:alphanumeric_with_dashes_underscores',
     }),
     __metadata("design:type", String)
 ], ConnectBotDto.prototype, "token", void 0);
+class CreateBotDto {
+    token;
+}
+exports.CreateBotDto = CreateBotDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Matches)(/^\d+:[A-Za-z0-9_-]{35,}$/, {
+        message: 'Invalid bot token format. Expected format: numbers:alphanumeric_with_dashes_underscores',
+    }),
+    __metadata("design:type", String)
+], CreateBotDto.prototype, "token", void 0);
 //# sourceMappingURL=connect-bot.dto.js.map

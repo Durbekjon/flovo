@@ -10,9 +10,11 @@ exports.ModulesModule = void 0;
 const common_1 = require("@nestjs/common");
 const auth_module_1 = require("./auth/auth.module");
 const users_module_1 = require("./users/users.module");
-const telegram_module_1 = require("./telegram/telegram.module");
 const orders_module_1 = require("./orders/orders.module");
 const products_module_1 = require("./products/products.module");
+const telegram_module_1 = require("./telegram/telegram.module");
+const analytics_module_1 = require("./analytics/analytics.module");
+const crm_module_1 = require("./crm/crm.module");
 let ModulesModule = class ModulesModule {
 };
 exports.ModulesModule = ModulesModule;
@@ -21,9 +23,11 @@ exports.ModulesModule = ModulesModule = __decorate([
         imports: [
             auth_module_1.AuthModule,
             users_module_1.UsersModule,
-            telegram_module_1.TelegramModule,
             orders_module_1.OrdersModule,
             products_module_1.ProductsModule,
+            telegram_module_1.TelegramModule,
+            analytics_module_1.AnalyticsModule,
+            crm_module_1.CRMModule,
         ],
     })
 ], ModulesModule);

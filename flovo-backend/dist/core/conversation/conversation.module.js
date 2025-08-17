@@ -10,12 +10,14 @@ exports.ConversationModule = void 0;
 const common_1 = require("@nestjs/common");
 const conversation_context_service_1 = require("./conversation-context.service");
 const prisma_module_1 = require("../prisma/prisma.module");
+const language_module_1 = require("../language/language.module");
+const memory_module_1 = require("../memory/memory.module");
 let ConversationModule = class ConversationModule {
 };
 exports.ConversationModule = ConversationModule;
 exports.ConversationModule = ConversationModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule],
+        imports: [prisma_module_1.PrismaModule, language_module_1.LanguageModule, memory_module_1.MemoryModule],
         providers: [conversation_context_service_1.ConversationContextService],
         exports: [conversation_context_service_1.ConversationContextService],
     })

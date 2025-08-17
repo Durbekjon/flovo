@@ -1,34 +1,33 @@
 {
   "name": "flovo-frontend",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
-    "@mantine/core": "^8.2.5",
-    "@mantine/hooks": "^8.2.5",
-    "@mantine/notifications": "^8.2.5",
-    "@tabler/icons-react": "^3.34.1",
-    "axios": "^1.11.0",
-    "next": "15.4.6",
-    "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "@mantine/core": "^7.0.0",
+    "@mantine/hooks": "^7.0.0",
+    "@mantine/dates": "^7.0.0",
+    "@mantine/notifications": "^7.0.0",
+    "@mantine/form": "^7.0.0",
+    "@mantine/charts": "^7.0.0",
+    "@tabler/icons-react": "^2.47.0",
+    "next": "14.0.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "axios": "^1.6.0",
+    "date-fns": "^2.30.0"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "15.4.6",
-    "tailwindcss": "^4",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.0.0",
     "typescript": "^5"
   }
 }

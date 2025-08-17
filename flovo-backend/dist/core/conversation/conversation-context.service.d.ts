@@ -1,4 +1,6 @@
 import { PrismaService } from '../prisma/prisma.service';
+import { LanguageDetectionService, LanguageInfo, CulturalContext } from '../language/language-detection.service';
+import { ConversationMemoryService } from '../memory/conversation-memory.service';
 export interface ConversationContext {
     conversationId: string;
     customerId: string;
@@ -10,6 +12,35 @@ export interface ConversationContext {
     lastInteraction: Date;
     sessionStart: Date;
     messageCount: number;
+    languageContext: LanguageContext;
+    memoryContext: MemoryContext;
+}
+export interface MemoryContext {
+    memoryScore: number;
+    shortTermInsights: string[];
+    longTermInsights: string[];
+    emotionalState: string;
+    pendingActions: number;
+    trustLevel: number;
+    relationshipStrength: string;
+    learningInsights: string[];
+    riskFactors: string[];
+    recommendations: string[];
+}
+export interface LanguageContext {
+    detectedLanguage: LanguageInfo;
+    culturalContext: CulturalContext;
+    languagePreference: string;
+    translationHistory: TranslationEntry[];
+    culturalAdaptations: string[];
+}
+export interface TranslationEntry {
+    originalText: string;
+    translatedText: string;
+    sourceLanguage: string;
+    targetLanguage: string;
+    timestamp: Date;
+    confidence: number;
 }
 export interface CustomerProfile {
     name?: string;
@@ -22,6 +53,24 @@ export interface CustomerProfile {
     averageOrderValue: number;
     lastOrderDate?: Date;
     favoriteCategories: string[];
+    culturalPreferences: CulturalPreferences;
+    memoryInsights: MemoryInsights;
+}
+export interface MemoryInsights {
+    communicationPatterns: string[];
+    emotionalPatterns: string[];
+    decisionPatterns: string[];
+    satisfactionTrends: string[];
+    loyaltyIndicators: string[];
+    riskFactors: string[];
+}
+export interface CulturalPreferences {
+    communicationStyle: 'formal' | 'casual' | 'friendly';
+    preferredLanguage: 'uz' | 'ru' | 'en';
+    responseSpeed: 'immediate' | 'normal' | 'detailed';
+    productInterests: string[];
+    culturalSensitivity: 'high' | 'medium' | 'low';
+    businessEtiquette: string[];
 }
 export interface CustomerPreferences {
     communicationStyle: 'formal' | 'casual' | 'friendly';
@@ -53,12 +102,18 @@ export declare enum IntentType {
 }
 export declare class ConversationContextService {
     private readonly prisma;
+    private readonly languageDetectionService;
+    private readonly conversationMemoryService;
     private readonly logger;
     private readonly contextCache;
-    constructor(prisma: PrismaService);
+    constructor(prisma: PrismaService, languageDetectionService: LanguageDetectionService, conversationMemoryService: ConversationMemoryService);
     getOrCreateContext(conversationId: string, customerId: string): Promise<ConversationContext>;
     updateContext(conversationId: string, customerId: string, newMessage: string, isUserMessage: boolean): Promise<ConversationContext>;
+    private buildMemoryContext;
+    private getRelationshipStrength;
+    private detectLanguageContext;
     private buildCustomerProfile;
+    private buildMemoryInsights;
     private analyzeConversationState;
     private detectIntent;
     private calculateConfidence;
@@ -72,4 +127,12 @@ export declare class ConversationContextService {
         activeConversations: number;
         cacheSize: number;
     }>;
+    getLanguageDistribution(): Promise<Record<string, number>>;
+    getMemoryInsights(conversationId: string, customerId: string): Promise<{
+        customerInsights: string[];
+        conversationInsights: string[];
+        actionRecommendations: string[];
+        riskFactors: string[];
+    }>;
+    getConversationSummary(conversationId: string, customerId: string): Promise<string>;
 }

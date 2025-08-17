@@ -658,3 +658,77 @@
 {"context":"RouterExplorer","level":"info","message":"Mapped {/products/:id, DELETE} route","timestamp":"2025-08-17T04:54:24.724Z"}
 {"context":"PrismaService","level":"info","message":"Database connected successfully","timestamp":"2025-08-17T04:54:24.843Z"}
 {"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2025-08-17T04:54:24.845Z"}
+{"context":"TelegramService","level":"info","message":"Processing update: 344611896","timestamp":"2025-08-17T05:00:11.940Z"}
+{"context":"TelegramService","level":"info","message":"Processing AI request for: \"Salooom\"","timestamp":"2025-08-17T05:00:12.062Z"}
+{"context":"GeminiService","level":"info","message":"Generating AI response...","timestamp":"2025-08-17T05:00:12.070Z"}
+{"context":"GeminiService","level":"info","message":"AI response generated: Valaykum assalom! 😊 Xush kelibsiz! Yordam berishga tayyorman. \"Pizdes kiyim bor aka: vapshe pizdes\"...","timestamp":"2025-08-17T05:00:13.554Z"}
+{"context":"TelegramService","level":"info","message":"Message sent successfully to chat 6092896396, message_id: 175","timestamp":"2025-08-17T05:00:14.019Z"}
+{"context":"TelegramService","level":"info","message":"Successfully processed message from chat 6092896396","timestamp":"2025-08-17T05:00:14.020Z"}
+{"context":"TelegramService","level":"info","message":"Processing update: 344611897","timestamp":"2025-08-17T05:00:29.415Z"}
+{"context":"TelegramService","level":"info","message":"Ignoring non-text message","timestamp":"2025-08-17T05:00:29.416Z"}
+{"context":"TelegramService","level":"info","message":"Processing update: 344611898","timestamp":"2025-08-17T05:00:41.001Z"}
+{"context":"TelegramService","level":"info","message":"Processing AI request for: \"Iyahahsndnejejshqkqlpqla\"","timestamp":"2025-08-17T05:00:41.018Z"}
+{"context":"GeminiService","level":"info","message":"Generating AI response...","timestamp":"2025-08-17T05:00:41.021Z"}
+{"context":"GeminiService","level":"info","message":"AI response generated: Tushunarli, hech qanday muammo yo'q! 😊 Agar sizga \"Pizdes kiyim bor aka: vapshe pizdes\" haqida qo's...","timestamp":"2025-08-17T05:00:42.400Z"}
+{"context":"TelegramService","level":"info","message":"Message sent successfully to chat 6092896396, message_id: 178","timestamp":"2025-08-17T05:00:42.850Z"}
+{"context":"TelegramService","level":"info","message":"Successfully processed message from chat 6092896396","timestamp":"2025-08-17T05:00:42.850Z"}
+{"context":"TelegramService","level":"info","message":"Processing update: 344611899","timestamp":"2025-08-17T05:00:59.632Z"}
+{"context":"TelegramService","level":"info","message":"Processing AI request for: \"Iaiqilqkqkakjajajajwjwjjqlqksbbxx bxn xbnxjejsiaoiziz.   Jjdjdksjs ok?\"","timestamp":"2025-08-17T05:00:59.656Z"}
+{"context":"GeminiService","level":"info","message":"Generating AI response...","timestamp":"2025-08-17T05:00:59.664Z"}
+{"context":"GeminiService","level":"info","message":"AI response generated: Men sizga yordam bera oladigan aniq bir narsa bormi? 😊 \"Pizdes kiyim bor aka: vapshe pizdes\" dan ta...","timestamp":"2025-08-17T05:01:00.907Z"}
+{"context":"TelegramService","level":"info","message":"Message sent successfully to chat 6092896396, message_id: 180","timestamp":"2025-08-17T05:01:01.365Z"}
+{"context":"TelegramService","level":"info","message":"Successfully processed message from chat 6092896396","timestamp":"2025-08-17T05:01:01.366Z"}
+{"context":"TelegramService","level":"info","message":"Processing update: 344611900","timestamp":"2025-08-17T05:01:13.249Z"}
+{"context":"TelegramService","level":"info","message":"Processing AI request for: \"ozingchi\"","timestamp":"2025-08-17T05:01:13.275Z"}
+{"context":"GeminiService","level":"info","message":"Generating AI response...","timestamp":"2025-08-17T05:01:13.280Z"}
+{"context":"GeminiService","level":"info","message":"AI response generated: Men ham yaxshiman! 😊 Sizga qanday yordam berishim mumkin? \"Pizdes kiyim bor aka: vapshe pizdes\" ga ...","timestamp":"2025-08-17T05:01:14.398Z"}
+{"context":"TelegramService","level":"info","message":"Message sent successfully to chat 6092896396, message_id: 182","timestamp":"2025-08-17T05:01:14.753Z"}
+{"context":"TelegramService","level":"info","message":"Successfully processed message from chat 6092896396","timestamp":"2025-08-17T05:01:14.753Z"}
+{"context":"TelegramService","level":"info","message":"Processing update: 344611901","timestamp":"2025-08-17T07:06:08.893Z"}
+{"context":"TelegramService","level":"info","message":"Processing AI request for: \"salom\"","timestamp":"2025-08-17T07:06:08.976Z"}
+{"context":"GeminiService","level":"info","message":"Generating AI response...","timestamp":"2025-08-17T07:06:08.985Z"}
+{"context":"GeminiService","level":"info","message":"AI response generated: Salom! 😊 Yaxshimisiz? Sizga nima kerak? \"Pizdes kiyim bor aka: vapshe pizdes\" dan tashqari boshqa m...","timestamp":"2025-08-17T07:06:10.459Z"}
+{"context":"TelegramService","level":"info","message":"Message sent successfully to chat 6092896396, message_id: 184","timestamp":"2025-08-17T07:06:10.991Z"}
+{"context":"TelegramService","level":"info","message":"Successfully processed message from chat 6092896396","timestamp":"2025-08-17T07:06:10.992Z"}
+{"context":"TelegramService","level":"info","message":"Processing update: 344611902","timestamp":"2025-08-17T07:06:53.572Z"}
+{"context":"TelegramService","level":"info","message":"Processing AI request for: \"u kiyim qolganmi, qayta tekshirib 100% ishonch hosil qil\"","timestamp":"2025-08-17T07:06:53.638Z"}
+{"context":"GeminiService","level":"info","message":"Generating AI response...","timestamp":"2025-08-17T07:06:53.647Z"}
+{"context":"GeminiService","level":"info","message":"AI response generated: Albatta, hozir tekshiraman! \"koylak\" nomli mahsulotimizdan bitta qolgan. Shuni buyurtma bermoqchimis...","timestamp":"2025-08-17T07:06:55.077Z"}
+{"context":"TelegramService","level":"info","message":"Message sent successfully to chat 6092896396, message_id: 186","timestamp":"2025-08-17T07:06:55.606Z"}
+{"context":"TelegramService","level":"info","message":"Successfully processed message from chat 6092896396","timestamp":"2025-08-17T07:06:55.606Z"}
+{"context":"TelegramService","level":"info","message":"Processing update: 344611903","timestamp":"2025-08-17T07:07:13.872Z"}
+{"context":"TelegramService","level":"info","message":"Processing AI request for: \"yoq 'Pizdes kiyim bor aka' deganidan\"","timestamp":"2025-08-17T07:07:13.894Z"}
+{"context":"GeminiService","level":"info","message":"Generating AI response...","timestamp":"2025-08-17T07:07:13.897Z"}
+{"context":"GeminiService","level":"info","message":"AI response generated: Kechirasiz, \"Pizdes kiyim bor aka\" degan mahsulotimiz hozirda yo'q. Boshqa biror narsa qiziqtiradimi...","timestamp":"2025-08-17T07:07:15.122Z"}
+{"context":"TelegramService","level":"info","message":"Message sent successfully to chat 6092896396, message_id: 188","timestamp":"2025-08-17T07:07:15.509Z"}
+{"context":"TelegramService","level":"info","message":"Successfully processed message from chat 6092896396","timestamp":"2025-08-17T07:07:15.509Z"}
+{"context":"TelegramService","level":"info","message":"Processing update: 344611904","timestamp":"2025-08-17T07:08:16.902Z"}
+{"context":"TelegramService","level":"info","message":"Processing AI request for: \"/start\"","timestamp":"2025-08-17T07:08:16.951Z"}
+{"context":"GeminiService","level":"info","message":"Generating AI response...","timestamp":"2025-08-17T07:08:16.956Z"}
+{"context":"GeminiService","level":"info","message":"AI response generated: Salom! I'm Flovo, your friendly assistant here in Uzbekistan. How can I help you today? I'm excited ...","timestamp":"2025-08-17T07:08:18.008Z"}
+{"context":"TelegramService","level":"info","message":"Message sent successfully to chat 7456899545, message_id: 190","timestamp":"2025-08-17T07:08:18.969Z"}
+{"context":"TelegramService","level":"info","message":"Successfully processed message from chat 7456899545","timestamp":"2025-08-17T07:08:18.970Z"}
+{"context":"TelegramService","level":"info","message":"Processing update: 344611905","timestamp":"2025-08-17T07:08:29.258Z"}
+{"context":"TelegramService","level":"info","message":"Processing AI request for: \"Salom\"","timestamp":"2025-08-17T07:08:29.293Z"}
+{"context":"GeminiService","level":"info","message":"Generating AI response...","timestamp":"2025-08-17T07:08:29.297Z"}
+{"context":"GeminiService","level":"info","message":"AI response generated: Salom! What can I do for you today? Maybe you need some information about our products? 😊\n...","timestamp":"2025-08-17T07:08:30.138Z"}
+{"context":"TelegramService","level":"info","message":"Message sent successfully to chat 7456899545, message_id: 192","timestamp":"2025-08-17T07:08:30.505Z"}
+{"context":"TelegramService","level":"info","message":"Successfully processed message from chat 7456899545","timestamp":"2025-08-17T07:08:30.505Z"}
+{"context":"TelegramService","level":"info","message":"Processing update: 344611906","timestamp":"2025-08-17T07:08:38.515Z"}
+{"context":"TelegramService","level":"info","message":"Processing AI request for: \"Ozbekcha gapir\"","timestamp":"2025-08-17T07:08:38.532Z"}
+{"context":"GeminiService","level":"info","message":"Generating AI response...","timestamp":"2025-08-17T07:08:38.535Z"}
+{"context":"GeminiService","level":"info","message":"AI response generated: Albatta! Uzbek tilida gaplashamiz. Sizga qanday yordam berishim mumkin? 😊\n...","timestamp":"2025-08-17T07:08:39.548Z"}
+{"context":"TelegramService","level":"info","message":"Message sent successfully to chat 7456899545, message_id: 194","timestamp":"2025-08-17T07:08:40.019Z"}
+{"context":"TelegramService","level":"info","message":"Successfully processed message from chat 7456899545","timestamp":"2025-08-17T07:08:40.019Z"}
+{"context":"TelegramService","level":"info","message":"Processing update: 344611907","timestamp":"2025-08-17T07:08:50.176Z"}
+{"context":"TelegramService","level":"info","message":"Processing AI request for: \"Mashulotlar qoldimi\"","timestamp":"2025-08-17T07:08:50.197Z"}
+{"context":"GeminiService","level":"info","message":"Generating AI response...","timestamp":"2025-08-17T07:08:50.199Z"}
+{"context":"GeminiService","level":"info","message":"AI response generated: Bizda hozirda faqat bitta \"koylak\" bor, narxi $12. Sizga buyurtma berishga yordam beraymi? 😊\n...","timestamp":"2025-08-17T07:08:51.512Z"}
+{"context":"TelegramService","level":"info","message":"Message sent successfully to chat 7456899545, message_id: 196","timestamp":"2025-08-17T07:08:52.047Z"}
+{"context":"TelegramService","level":"info","message":"Successfully processed message from chat 7456899545","timestamp":"2025-08-17T07:08:52.047Z"}
+{"context":"TelegramService","level":"info","message":"Processing update: 344611908","timestamp":"2025-08-17T07:09:07.826Z"}
+{"context":"TelegramService","level":"info","message":"Processing AI request for: \"Olchami qanday, menga loyiqmi\"","timestamp":"2025-08-17T07:09:07.858Z"}
+{"context":"GeminiService","level":"info","message":"Generating AI response...","timestamp":"2025-08-17T07:09:07.860Z"}
+{"context":"GeminiService","level":"info","message":"AI response generated: \"Koylak\"ning o'lchami universal. Afsuski, aniq o'lchamini bilmayman. Lekin, agar xohlasangiz, siz uc...","timestamp":"2025-08-17T07:09:09.041Z"}
+{"context":"TelegramService","level":"info","message":"Message sent successfully to chat 7456899545, message_id: 198","timestamp":"2025-08-17T07:09:09.442Z"}
+{"context":"TelegramService","level":"info","message":"Successfully processed message from chat 7456899545","timestamp":"2025-08-17T07:09:09.442Z"}
