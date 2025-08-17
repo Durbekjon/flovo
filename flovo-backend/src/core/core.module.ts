@@ -1,36 +1,16 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from './prisma/prisma.module';
+import { HealthController } from './health/health.controller';
+import { EncryptionService } from './encryption/encryption.service';
+import { GeminiService } from './gemini/gemini.service';
+import { RetryService } from './retry/retry.service';
 import { SecurityModule } from './security/security.module';
 import { LoggingModule } from './logging/logging.module';
-import { CacheModule } from './cache/cache.module';
-import { ConversationModule } from './conversation/conversation.module';
-import { LanguageModule } from './language/language.module';
-import { MemoryModule } from './memory/memory.module';
-import { AnalyticsModule } from './analytics/analytics.module';
-import { CRMModule } from './crm/crm.module';
 
 @Module({
-  imports: [
-    PrismaModule,
-    SecurityModule,
-    LoggingModule,
-    CacheModule,
-    ConversationModule,
-    LanguageModule,
-    MemoryModule,
-    AnalyticsModule,
-    CRMModule,
-  ],
-  exports: [
-    PrismaModule,
-    SecurityModule,
-    LoggingModule,
-    CacheModule,
-    ConversationModule,
-    LanguageModule,
-    MemoryModule,
-    AnalyticsModule,
-    CRMModule,
-  ],
+  imports: [PrismaModule, SecurityModule, LoggingModule],
+  controllers: [HealthController],
+  providers: [EncryptionService, GeminiService, RetryService],
+  exports: [PrismaModule, EncryptionService, GeminiService, RetryService],
 })
 export class CoreModule {}

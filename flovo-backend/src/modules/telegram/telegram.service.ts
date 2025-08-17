@@ -1,361 +1,326 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../core/prisma/prisma.service';
+import { EncryptionService } from '../../core/encryption/encryption.service';
 import { GeminiService } from '../../core/gemini/gemini.service';
-import { UsersService } from '../users/users.service';
+import { RetryService } from '../../core/retry/retry.service';
 import { OrdersService } from '../orders/orders.service';
-import { ConversationContextService } from '../../core/conversation/conversation-context.service';
-import type { TelegramWebhookDto } from './dto/telegram-webhook.dto';
+import { ProductsService } from '../products/products.service';
+import { TelegramWebhookDto } from './dto/telegram-webhook.dto';
+import type { Bot, Conversation, Message } from '@prisma/client';
 
 @Injectable()
 export class TelegramService {
   private readonly logger = new Logger(TelegramService.name);
+  private readonly processedUpdates = new Set<number>();
 
   constructor(
     private readonly prisma: PrismaService,
+    private readonly encryption: EncryptionService,
+    private readonly configService: ConfigService,
     private readonly geminiService: GeminiService,
-    private readonly usersService: UsersService,
+    private readonly retryService: RetryService,
     private readonly ordersService: OrdersService,
-    private readonly conversationContextService: ConversationContextService,
+    private readonly productsService: ProductsService,
   ) {}
 
-  async processUpdate(webhookData: TelegramWebhookDto) {
+  async processUpdate(webhookData: TelegramWebhookDto): Promise<void> {
+    this.logger.log(`Processing update: ${webhookData.update_id}`);
+
+    // Check for duplicate updates (idempotency)
+    if (this.processedUpdates.has(webhookData.update_id)) {
+      this.logger.log(
+        `Update ${webhookData.update_id} already processed, skipping`,
+      );
+      return;
+    }
+
+    // Mark update as being processed
+    this.processedUpdates.add(webhookData.update_id);
+
+    // Clean up old update IDs to prevent memory leak (keep last 1000)
+    if (this.processedUpdates.size > 1000) {
+      const sortedIds = Array.from(this.processedUpdates).sort((a, b) => a - b);
+      const toDelete = sortedIds.slice(0, sortedIds.length - 1000);
+      toDelete.forEach((id) => this.processedUpdates.delete(id));
+    }
+
+    // Only handle text messages for now
+    if (!webhookData.message?.text) {
+      this.logger.log('Ignoring non-text message');
+      return;
+    }
+
+    const message = webhookData.message;
+    const chatId = message.chat.id.toString();
+    const userText = message.text;
+
     try {
-      const { message, callback_query } = webhookData;
-
-      if (!message && !callback_query) {
-        this.logger.warn('No message or callback_query in webhook data');
-        return;
-      }
-
-      const update = message || callback_query;
-      const chatId = update.chat.id.toString();
-      const userId = update.from.id.toString();
-      const text = message?.text || callback_query?.data || '';
-
-      // Find bot by token (in production, you'd get this from the webhook URL)
+      // Step 1: Identify bot (for now, we'll use a simple approach)
+      // In production, we'd need to identify which bot this webhook belongs to
       const bot = await this.findBotForChat(chatId);
       if (!bot) {
         this.logger.warn(`No bot found for chat ${chatId}`);
         return;
       }
 
-      // Get or create conversation
-      let conversation = await this.prisma.conversation.findUnique({
-        where: { id: chatId },
-        include: { messages: true },
-      });
-
-      if (!conversation) {
-        conversation = await this.prisma.conversation.create({
-          data: {
-            id: chatId,
-            botId: bot.id,
-          },
-          include: { messages: true },
-        });
+      // Check if bot is enabled
+      if (!bot.isEnabled) {
+        this.logger.log(
+          `Bot ${bot.id} is disabled, ignoring message from chat ${chatId}`,
+        );
+        return;
       }
 
-      // Save user message immediately
-      const userMessage = await this.prisma.message.create({
-        data: {
-          content: text,
-          sender: 'USER',
-          conversationId: chatId,
-        },
-      });
+      // Step 1.5: Check message timestamp to avoid processing old messages
+      const messageDate = new Date(message.date * 1000); // Telegram sends Unix timestamp
+      const currentTime = new Date();
+      const timeDifference = currentTime.getTime() - messageDate.getTime();
+      const maxAgeMinutes =
+        this.configService.get<number>('MAX_MESSAGE_AGE_MINUTES') || 5; // Configurable, default 5 minutes
 
-      // Get conversation context
-      const conversationContext =
-        await this.conversationContextService.getOrCreateContext(
-          chatId,
-          userId,
+      if (timeDifference > maxAgeMinutes * 60 * 1000) {
+        this.logger.log(
+          `Ignoring old message from chat ${chatId}. Message age: ${Math.round(timeDifference / 1000 / 60)} minutes (max: ${maxAgeMinutes} minutes)`,
         );
+        return;
+      }
 
-      // Update context with new message
-      await this.conversationContextService.updateContext(conversationContext, {
-        lastMessage: text,
-        timestamp: new Date(),
-        sender: 'USER',
-      });
+      // Additional check: Only process messages that arrived after the bot was last enabled
+      // This prevents processing messages that arrived while the bot was disabled
+      if (bot.updatedAt && messageDate < bot.updatedAt) {
+        this.logger.log(
+          `Ignoring message from chat ${chatId} that arrived before bot was enabled. Message: ${messageDate.toISOString()}, Bot enabled: ${bot.updatedAt.toISOString()}`,
+        );
+        return;
+      }
 
-      // Retrieve last 10-15 messages for context (as specified)
-      const recentMessages = await this.prisma.message.findMany({
-        where: { conversationId: chatId },
-        orderBy: { createdAt: 'desc' },
-        take: 15, // As specified in requirements
-      });
+      // Step 2: Ensure conversation exists
+      const conversation = await this.ensureConversation(chatId, bot.id);
 
-      // Process with enhanced AI
-      const aiResponse = await this.processWithEnhancedAI(
-        text,
-        recentMessages.reverse(), // Reverse to get chronological order
-        conversationContext,
-        bot,
-      );
+      // Step 3: Save user message
+      await this.saveMessage(conversation.id, userText || '', 'USER');
 
-      // Save bot response
-      const botMessage = await this.prisma.message.create({
-        data: {
-          content: aiResponse.message,
-          sender: 'BOT',
-          conversationId: chatId,
-        },
-      });
+      // Step 4: Get conversation history (last 10 messages)
+      const history = await this.getConversationHistory(conversation.id, 10);
 
-      // Update context with bot response
-      await this.conversationContextService.updateContext(conversationContext, {
-        lastMessage: aiResponse.message,
-        timestamp: new Date(),
-        sender: 'BOT',
-        intent: aiResponse.intent,
-        confidence: aiResponse.confidence,
-      });
+      // Step 5: Process with AI and handle intents
+      const aiResponse = await this.processWithAI(userText || '', history, bot);
 
-      // Send response back to user
-      await this.sendTelegramMessage(chatId, aiResponse.message, bot.token);
+      // Step 6: Save bot response
+      await this.saveMessage(conversation.id, aiResponse, 'BOT');
 
-      // Log conversation analytics
-      this.logConversationAnalytics(conversation, aiResponse, text);
+      // Step 7: Send reply via Telegram (placeholder for now)
+      await this.sendTelegramReply(chatId, aiResponse);
+
+      this.logger.log(`Successfully processed message from chat ${chatId}`);
     } catch (error) {
-      this.logger.error('Error processing Telegram update:', error);
-      throw error;
+      this.logger.error(
+        `Error processing update: ${error.message}`,
+        error.stack,
+      );
     }
   }
 
-  private async findBotForChat(chatId: string) {
-    // In a real implementation, you'd get the bot token from the webhook URL
-    // For now, we'll find the first available bot
-    const bots = await this.prisma.bot.findMany({
+  private async findBotForChat(chatId: string): Promise<Bot | null> {
+    // For MVP, we'll return the first available bot
+    // TODO: Implement proper bot identification based on webhook URL or token
+    return this.prisma.bot.findFirst({
       where: { isEnabled: true },
     });
-
-    if (bots.length === 0) {
-      return null;
-    }
-
-    // Get the decrypted token for the first bot
-    const bot = await this.usersService.getBotByUserId(bots[0].userId);
-    return bot;
   }
 
-  private async processWithEnhancedAI(
+  private async ensureConversation(
+    chatId: string,
+    botId: number,
+  ): Promise<Conversation> {
+    return this.prisma.conversation.upsert({
+      where: { id: chatId },
+      update: {},
+      create: {
+        id: chatId,
+        botId,
+      },
+    });
+  }
+
+  private async saveMessage(
+    conversationId: string,
+    content: string,
+    sender: 'USER' | 'BOT',
+  ): Promise<Message> {
+    return this.prisma.message.create({
+      data: {
+        conversationId,
+        content,
+        sender,
+      },
+    });
+  }
+
+  private async getConversationHistory(
+    conversationId: string,
+    limit: number = 10,
+  ): Promise<Message[]> {
+    return this.prisma.message.findMany({
+      where: { conversationId },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+    });
+  }
+
+  private async processWithAI(
     userText: string,
-    messageHistory: any[],
-    conversationContext: any,
-    bot: any,
-  ) {
-    try {
-      // Build conversation history for AI
-      const conversationHistory = messageHistory.map((msg) => ({
-        role: msg.sender === 'USER' ? 'user' : 'assistant',
-        content: msg.content,
-        timestamp: msg.createdAt,
-      }));
+    history: Message[],
+    bot: Bot,
+  ): Promise<string> {
+    this.logger.log(`Processing AI request for: "${userText}"`);
 
-      // Process with AI
-      const aiResponse = await this.geminiService.generateResponse(
-        userText,
-        conversationHistory,
-        conversationContext,
-      );
+    // Get current product inventory for this user
+    const productContext = await this.productsService.getProductsForAI(
+      bot.userId,
+    );
 
-      // Handle specific intents
-      if (aiResponse.intent === 'CREATE_ORDER') {
-        await this.handleOrderIntent(conversationContext, userText, aiResponse);
-      } else if (aiResponse.intent === 'FETCH_ORDERS') {
-        await this.handleFetchOrdersIntent(conversationContext, aiResponse);
-      } else if (aiResponse.intent === 'CUSTOMER_SERVICE') {
-        await this.handleCustomerServiceIntent(
-          conversationContext,
-          userText,
-          aiResponse,
-        );
-      } else if (aiResponse.intent === 'SALES_OPPORTUNITY') {
-        await this.handleSalesOpportunityIntent(
-          conversationContext,
-          userText,
-          aiResponse,
-        );
-      }
+    // Get user's orders for context
+    const userOrders = await this.ordersService.getOrdersByUser(bot.userId);
 
-      return aiResponse;
-    } catch (error) {
-      this.logger.error('Error processing with AI:', error);
-      // Return fallback response
-      return {
-        message:
-          "I'm sorry, I'm having trouble processing your request right now. Please try again in a moment.",
-        intent: 'GENERAL',
-        confidence: 0.5,
-      };
+    const aiResponse = await this.geminiService.generateResponse(
+      userText,
+      history,
+      productContext,
+      userOrders,
+    );
+
+    // Handle order creation intent
+    if (aiResponse.intent === 'CREATE_ORDER' && aiResponse.orderData) {
+      await this.handleOrderIntent(aiResponse.orderData, bot.userId);
     }
+
+    // Handle order fetching intent
+    if (aiResponse.intent === 'FETCH_ORDERS' && aiResponse.shouldFetchOrders) {
+      return await this.handleFetchOrdersIntent(bot.userId);
+    }
+
+    return aiResponse.text;
   }
 
   private async handleOrderIntent(
-    conversationContext: any,
-    userText: string,
-    aiResponse: any,
-  ) {
+    orderData: any,
+    userId: number,
+  ): Promise<void> {
+    this.logger.log(`Processing order intent for user ${userId}:`, orderData);
+
     try {
-      // Extract order details from AI response or user text
-      const orderData = this.extractOrderData(userText, aiResponse);
+      const order = await this.ordersService.createOrderFromIntent(
+        userId,
+        orderData,
+      );
+      this.logger.log(`Order created successfully: ${order.id}`);
+    } catch (error) {
+      this.logger.error(
+        `Failed to create order: ${error.message}`,
+        error.stack,
+      );
+    }
+  }
 
-      if (orderData) {
-        const order = await this.ordersService.createOrder({
-          customerName: orderData.customerName,
-          customerContact: orderData.customerContact,
-          customerAddress: orderData.customerAddress,
-          details: orderData.details,
-          userId: conversationContext.userId,
-        });
+  private async handleFetchOrdersIntent(userId: number): Promise<string> {
+    this.logger.log(`Fetching orders for user ${userId}`);
 
-        // Update conversation context with order information
-        await this.conversationContextService.updateContext(
-          conversationContext,
-          {
-            totalOrders: (conversationContext.totalOrders || 0) + 1,
-            lastOrderDate: new Date(),
-            lastOrderAmount: orderData.details.total,
-          },
+    try {
+      const orders = await this.ordersService.getOrdersByUser(userId);
+
+      if (orders.length === 0) {
+        return "You haven't placed any orders with us yet. Ready to make your first purchase? I'd be happy to help you find something great!";
+      }
+
+      // Format orders for display
+      const ordersList = orders
+        .slice(0, 5) // Show last 5 orders
+        .map((order) => {
+          const status = order.status.toLowerCase();
+          const date = new Date(order.createdAt).toLocaleDateString();
+          const details = order.details as any;
+          const items = details?.items || 'N/A';
+          return `• Order #${order.id}: ${items} (${status}) - ${date}`;
+        })
+        .join('\n');
+
+      const response = `Here are your recent orders:\n\n${ordersList}`;
+
+      if (orders.length > 5) {
+        return (
+          response +
+          `\n\n...and ${orders.length - 5} more orders. Is there anything specific you'd like to know about any of these?`
         );
-
-        this.logger.log(
-          `Order created: ${order.id} for user ${conversationContext.userId}`,
-        );
       }
+
+      return response + `\n\nIs there anything else I can help you with today?`;
     } catch (error) {
-      this.logger.error('Error handling order intent:', error);
+      this.logger.error(
+        `Failed to fetch orders: ${error.message}`,
+        error.stack,
+      );
+      return "Oops! I'm having trouble accessing your orders right now. Can you try asking again in a moment?";
     }
   }
 
-  private async handleFetchOrdersIntent(
-    conversationContext: any,
-    aiResponse: any,
-  ) {
+  private async sendTelegramReply(chatId: string, text: string): Promise<void> {
     try {
-      const orders = await this.ordersService.getOrdersWithPagination(
-        conversationContext.userId,
-        1,
-        5,
-      );
-
-      // Add personalized message based on relationship score
-      const relationshipScore = conversationContext.relationshipScore || 0;
-      if (relationshipScore > 0.7) {
-        aiResponse.message +=
-          "\n\nI've found your recent orders. As a valued customer, I'm here to help with anything you need!";
-      }
-    } catch (error) {
-      this.logger.error('Error handling fetch orders intent:', error);
-    }
-  }
-
-  private async handleCustomerServiceIntent(
-    conversationContext: any,
-    userText: string,
-    aiResponse: any,
-  ) {
-    try {
-      // Log customer service interaction
-      this.logger.log(
-        `Customer service request from ${conversationContext.customerId}: ${userText}`,
-      );
-
-      // Update conversation context
-      await this.conversationContextService.updateContext(conversationContext, {
-        customerServiceRequests:
-          (conversationContext.customerServiceRequests || 0) + 1,
-        lastCustomerServiceRequest: new Date(),
+      // Get the bot token from the first enabled bot (for MVP)
+      // In production, we'd get the specific bot token for this conversation
+      const bot = await this.prisma.bot.findFirst({
+        where: { isEnabled: true },
       });
-    } catch (error) {
-      this.logger.error('Error handling customer service intent:', error);
-    }
-  }
 
-  private async handleSalesOpportunityIntent(
-    conversationContext: any,
-    userText: string,
-    aiResponse: any,
-  ) {
-    try {
-      // Log sales opportunity
-      this.logger.log(
-        `Sales opportunity identified for ${conversationContext.customerId}: ${userText}`,
-      );
-
-      // Update conversation context
-      await this.conversationContextService.updateContext(conversationContext, {
-        salesOpportunities: (conversationContext.salesOpportunities || 0) + 1,
-        lastSalesOpportunity: new Date(),
-      });
-    } catch (error) {
-      this.logger.error('Error handling sales opportunity intent:', error);
-    }
-  }
-
-  private extractOrderData(userText: string, aiResponse: any) {
-    // Simple order data extraction - in production, this would be more sophisticated
-    try {
-      // Look for order details in AI response or user text
-      const orderMatch = userText.match(/order|buy|purchase/i);
-      if (orderMatch) {
-        return {
-          customerName: 'Customer', // Would extract from context
-          customerContact: 'telegram', // Would extract from context
-          customerAddress: 'Not specified',
-          details: {
-            items: ['Product'],
-            total: 100, // Would extract from text
-            currency: 'USD',
-          },
-        };
+      if (!bot) {
+        this.logger.error('No enabled bot found for sending reply');
+        return;
       }
-      return null;
-    } catch (error) {
-      this.logger.error('Error extracting order data:', error);
-      return null;
-    }
-  }
 
-  private async sendTelegramMessage(
-    chatId: string,
-    message: string,
-    botToken: string,
-  ) {
-    try {
-      const response = await fetch(
-        `https://api.telegram.org/bot${botToken}/sendMessage`,
+      // Decrypt the bot token
+      const botToken = this.encryption.decrypt(bot.token);
+
+      // Send message via Telegram Bot API with retry logic
+      await this.retryService.executeWithRetry(
+        async () => {
+          const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              chat_id: chatId,
+              text: text,
+              parse_mode: 'HTML', // Enable HTML formatting
+            }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.text();
+            throw new Error(
+              `Telegram API error: ${response.status} - ${errorData}`,
+            );
+          }
+
+          const result = await response.json();
+          this.logger.log(
+            `Message sent successfully to chat ${chatId}, message_id: ${result.result?.message_id}`,
+          );
+          return result;
+        },
         {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            chat_id: chatId,
-            text: message,
-            parse_mode: 'HTML',
-          }),
+          maxAttempts: 3,
+          baseDelay: 1000,
+          maxDelay: 5000,
         },
       );
-
-      if (!response.ok) {
-        const error = await response.json();
-        this.logger.error(
-          `Failed to send Telegram message: ${error.description}`,
-        );
-      }
     } catch (error) {
-      this.logger.error('Error sending Telegram message:', error);
+      this.logger.error(
+        `Failed to send Telegram reply to chat ${chatId} after retries: ${error.message}`,
+        error.stack,
+      );
     }
-  }
-
-  private logConversationAnalytics(
-    conversation: any,
-    aiResponse: any,
-    userText: string,
-  ) {
-    this.logger.log(
-      `Conversation ${conversation.id}: Intent=${aiResponse.intent}, Confidence=${aiResponse.confidence}, UserText="${userText.substring(0, 50)}..."`,
-    );
   }
 }

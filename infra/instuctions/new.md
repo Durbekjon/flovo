@@ -1,4 +1,3 @@
-
 AI Instruction: Project Flovo - Full Application Build Specification
 
 Objective: Build a complete, production-ready, multi-tenant SaaS application named "Flovo."

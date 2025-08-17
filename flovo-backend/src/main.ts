@@ -1,9 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { IndexModule } from './index.module';
 import { ValidationPipe } from '@nestjs/common';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import helmet from 'helmet';
-import { GlobalExceptionFilter } from './core/filters/global-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(IndexModule, {
@@ -24,7 +22,7 @@ async function bootstrap() {
   // CORS configuration
   const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map((s) =>
     s.trim(),
-  ) || ['http://localhost:3000', 'https://924c9d04ac33.ngrok-free.app'];
+  ) || ['http://localhost:3000', 'https://68e26a89caeb.ngrok-free.app'];
 
   app.enableCors({
     origin: (
@@ -58,12 +56,6 @@ async function bootstrap() {
       },
     }),
   );
-
-  // Global exception filter
-  app.useGlobalFilters(new GlobalExceptionFilter());
-
-  // Winston logger
-  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
   const port = process.env.PORT || 4000;
   await app.listen(port);
