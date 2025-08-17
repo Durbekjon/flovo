@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16
+    container_name: flovo-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: flovo
+    ports:
+      - "5432:5432"
+    volumes:
+      - flovo_pgdata:/var/lib/postgresql/data
+
+volumes:
+  flovo_pgdata:
+    driver: local
