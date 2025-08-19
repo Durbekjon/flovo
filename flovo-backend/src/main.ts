@@ -20,29 +20,12 @@ async function bootstrap() {
   });
 
   // CORS configuration
-  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map((s) =>
-    s.trim(),
-  ) || ['http://localhost:3000', 'https://flovo.kydanza.me'];
+  // const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map((s) =>
+  //   s.trim(),
+  // ) || ['http://localhost:3000', 'https://flovo.kydanza.me'];
 
   app.enableCors({
-    origin: (
-      origin: string | undefined,
-      callback: (err: Error | null, allow?: boolean) => void,
-    ) => {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
+    origin: '*',
   });
 
   // Global pipes
