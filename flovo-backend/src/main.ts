@@ -22,7 +22,7 @@ async function bootstrap() {
   // CORS configuration
   const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map((s) =>
     s.trim(),
-  ) || ['http://localhost:3000', 'https://68e26a89caeb.ngrok-free.app'];
+  ) || ['http://localhost:3000', 'https://flovo.kydanza.me'];
 
   app.enableCors({
     origin: (
