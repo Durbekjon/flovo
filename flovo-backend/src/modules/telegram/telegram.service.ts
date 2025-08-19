@@ -6,6 +6,7 @@ import { GeminiService } from '../../core/gemini/gemini.service';
 import { RetryService } from '../../core/retry/retry.service';
 import { OrdersService } from '../orders/orders.service';
 import { ProductsService } from '../products/products.service';
+import { ChannelsService } from '../channels/channels.service';
 import { TelegramWebhookDto } from './dto/telegram-webhook.dto';
 import type { Bot, Conversation, Message } from '@prisma/client';
 
@@ -22,6 +23,7 @@ export class TelegramService {
     private readonly retryService: RetryService,
     private readonly ordersService: OrdersService,
     private readonly productsService: ProductsService,
+    private readonly channelsService: ChannelsService,
   ) {}
 
   async processUpdate(webhookData: TelegramWebhookDto): Promise<void> {
@@ -54,6 +56,12 @@ export class TelegramService {
     const message = webhookData.message;
     const chatId = message.chat.id.toString();
     const userText = message.text;
+
+    // Check for channel connection command
+    if (userText === '/connect_flovo') {
+      await this.handleChannelConnection(message);
+      return;
+    }
 
     try {
       // Step 1: Identify bot (for now, we'll use a simple approach)
@@ -321,6 +329,149 @@ export class TelegramService {
         `Failed to send Telegram reply to chat ${chatId} after retries: ${error.message}`,
         error.stack,
       );
+    }
+  }
+
+  private async handleChannelConnection(message: any): Promise<void> {
+    this.logger.log(
+      `Handling channel connection command from chat ${message.chat.id}`,
+    );
+
+    try {
+      // Verify that this is a channel
+      if (message.chat.type !== 'channel') {
+        this.logger.log(
+          `Ignoring /connect_flovo command from non-channel: ${message.chat.type}`,
+        );
+        return;
+      }
+
+      // Extract required data
+      const channelId = BigInt(message.chat.id);
+      const channelTitle = message.chat.title || 'Unknown Channel';
+      const telegramUserId = message.from.id;
+
+      this.logger.log(
+        `Channel connection attempt: channelId=${channelId}, title=${channelTitle}, userId=${telegramUserId}`,
+      );
+
+      // Find the user in our system by Telegram ID
+      const user = await this.prisma.user.findUnique({
+        where: {
+          telegramId: BigInt(telegramUserId),
+        },
+      });
+
+      if (!user) {
+        this.logger.log(
+          `No registered user found with Telegram ID ${telegramUserId}`,
+        );
+        return;
+      }
+
+      // Connect the channel
+      await this.channelsService.connectChannel(
+        user.id,
+        channelId,
+        channelTitle,
+      );
+
+      // Send confirmation message to the channel
+      await this.sendChannelConnectionConfirmation(channelId.toString());
+
+      this.logger.log(
+        `Successfully connected channel ${channelId} to user ${user.id}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Error handling channel connection: ${error.message}`,
+        error.stack,
+      );
+
+      // Try to send error message to channel if possible
+      try {
+        await this.sendChannelConnectionError(message.chat.id.toString());
+      } catch (sendError) {
+        this.logger.error(
+          `Failed to send error message to channel: ${sendError.message}`,
+        );
+      }
+    }
+  }
+
+  private async sendChannelConnectionConfirmation(
+    chatId: string,
+  ): Promise<void> {
+    const confirmationMessage =
+      '✅ Flovo has been successfully connected to this channel! You can now use the Autoposting feature from your dashboard.';
+    await this.sendTelegramMessage(chatId, confirmationMessage);
+  }
+
+  private async sendChannelConnectionError(chatId: string): Promise<void> {
+    const errorMessage =
+      '❌ Failed to connect this channel to Flovo. Please make sure you are registered on Flovo and try again.';
+    await this.sendTelegramMessage(chatId, errorMessage);
+  }
+
+  private async sendTelegramMessage(
+    chatId: string,
+    text: string,
+  ): Promise<void> {
+    try {
+      // Get the bot token from the first enabled bot (for MVP)
+      const bot = await this.prisma.bot.findFirst({
+        where: { isEnabled: true },
+      });
+
+      if (!bot) {
+        this.logger.error('No enabled bot found for sending message');
+        return;
+      }
+
+      // Decrypt the bot token
+      const botToken = this.encryption.decrypt(bot.token);
+
+      // Send message via Telegram Bot API
+      await this.retryService.executeWithRetry(
+        async () => {
+          const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              chat_id: chatId,
+              text: text,
+              parse_mode: 'HTML',
+            }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.text();
+            throw new Error(
+              `Telegram API error: ${response.status} - ${errorData}`,
+            );
+          }
+
+          const result = await response.json();
+          this.logger.log(
+            `Message sent successfully to chat ${chatId}, message_id: ${result.result?.message_id}`,
+          );
+          return result;
+        },
+        {
+          maxAttempts: 3,
+          baseDelay: 1000,
+          maxDelay: 5000,
+        },
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to send Telegram message to chat ${chatId}: ${error.message}`,
+        error.stack,
+      );
+      throw error;
     }
   }
 }

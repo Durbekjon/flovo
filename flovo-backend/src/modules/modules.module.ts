@@ -4,6 +4,7 @@ import { UsersModule } from './users/users.module';
 import { TelegramModule } from './telegram/telegram.module';
 import { OrdersModule } from './orders/orders.module';
 import { ProductsModule } from './products/products.module';
+import { ChannelsModule } from './channels/channels.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { ProductsModule } from './products/products.module';
     TelegramModule,
     OrdersModule,
     ProductsModule,
+    ChannelsModule,
   ],
 })
 export class ModulesModule {}
