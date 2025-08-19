@@ -74,7 +74,7 @@ function DefaultErrorFallback({ error, resetError }: ErrorFallbackProps) {
             </h1>
             
             <p className="text-body text-[var(--brand-text-secondary)] mb-6">
-              We encountered an unexpected error. Don't worry, our team has been notified and is working to fix it.
+              We encountered an unexpected error. Don&apos;t worry, our team has been notified and is working to fix it.
             </p>
 
             {process.env.NODE_ENV === 'development' && (

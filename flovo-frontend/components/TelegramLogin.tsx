@@ -27,6 +27,8 @@ export function TelegramLogin() {
       return;
     }
 
+    const currentContainer = containerRef.current;
+
     window.onTelegramAuth = async (user: TelegramLoginData) => {
       try {
         await login(user);
@@ -45,14 +47,14 @@ export function TelegramLogin() {
     script.setAttribute("data-userpic", "false");
     script.setAttribute("data-onauth", "onTelegramAuth(user)");
 
-    if (containerRef.current) {
-      containerRef.current.innerHTML = "";
-      containerRef.current.appendChild(script);
+    if (currentContainer) {
+      currentContainer.innerHTML = "";
+      currentContainer.appendChild(script);
       setReady(true);
     }
 
     return () => {
-      if (containerRef.current) containerRef.current.innerHTML = "";
+      if (currentContainer) currentContainer.innerHTML = "";
       delete window.onTelegramAuth;
     };
   }, [login]);

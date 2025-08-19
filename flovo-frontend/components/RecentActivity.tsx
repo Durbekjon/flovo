@@ -1,6 +1,6 @@
 "use client";
 
-import { IconPackage, IconShoppingCart, IconUser, IconClock, IconCheck, IconTruck, IconX, IconActivity } from '@tabler/icons-react';
+import { IconPackage, IconUser, IconClock, IconCheck, IconTruck, IconX, IconActivity } from '@tabler/icons-react';
 
 interface RecentActivityProps {
   orders?: Array<{
@@ -8,7 +8,7 @@ interface RecentActivityProps {
     status: string;
     customerName?: string;
     createdAt: string;
-    details: any;
+    details: { items?: string };
   }>;
   loading?: boolean;
 }
@@ -113,7 +113,7 @@ export function RecentActivity({ orders, loading }: RecentActivityProps) {
   return (
     <div className="space-y-4">
       {recentOrders.map((order, index) => {
-        const details = order.details as any;
+        const details = order.details;
         const items = details?.items || 'Unknown Product';
         const statusConfig = getStatusConfig(order.status);
         

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { notifications } from '@mantine/notifications';
 import { UsersService, type ConnectBotRequest } from '../services/users.service';
@@ -31,11 +31,11 @@ export function useBot() {
       setTimeout(() => {
         router.push('/dashboard');
       }, 2000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       notifications.show({
         color: 'red',
         title: 'Connection failed',
-        message: error?.message ?? 'Failed to connect bot. Please check your token.',
+        message: error instanceof Error ? error.message : 'Failed to connect bot. Please check your token.',
       });
       throw error;
     } finally {
@@ -51,7 +51,7 @@ export function useBot() {
     try {
       const response = await UsersService.getBot();
       setBot(response.bot);
-    } catch (error: any) {
+    } catch {
       notifications.show({
         color: 'red',
         title: 'Error',
@@ -78,11 +78,11 @@ export function useBot() {
         title: 'Bot Started! 🚀',
         message: 'Your bot is now active and webhook has been set.',
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       notifications.show({
         color: 'red',
         title: 'Failed to start bot',
-        message: error?.message ?? 'Unable to start bot. Please try again.',
+        message: error instanceof Error ? error.message : 'Unable to start bot. Please try again.',
       });
     } finally {
       setLoading(false);
@@ -99,11 +99,11 @@ export function useBot() {
         title: 'Bot Stopped ⏸️',
         message: 'Your bot is now inactive and webhook has been removed.',
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       notifications.show({
         color: 'red',
         title: 'Failed to stop bot',
-        message: error?.message ?? 'Unable to stop bot. Please try again.',
+        message: error instanceof Error ? error.message : 'Unable to stop bot. Please try again.',
       });
     } finally {
       setLoading(false);
@@ -122,11 +122,11 @@ export function useBot() {
           ? 'Your bot is now active and webhook has been set.' 
           : 'Your bot is now inactive and webhook has been removed.',
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       notifications.show({
         color: 'red',
         title: 'Failed to toggle bot',
-        message: error?.message ?? 'Unable to toggle bot. Please try again.',
+        message: error instanceof Error ? error.message : 'Unable to toggle bot. Please try again.',
       });
     } finally {
       setLoading(false);

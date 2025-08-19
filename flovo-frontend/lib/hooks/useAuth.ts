@@ -44,11 +44,11 @@ export function useAuth() {
       } else {
         router.push('/onboarding');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       notifications.show({
         color: 'red',
         title: 'Login failed',
-        message: error?.message ?? 'Unable to login. Please try again.',
+        message: error instanceof Error ? error.message : 'Unable to login. Please try again.',
       });
       throw error;
     }
@@ -79,7 +79,7 @@ export function useAuth() {
         isAuthenticated: true,
         hasBot,
       });
-    } catch (error) {
+    } catch {
       // Token is invalid, remove it
       localStorage.removeItem('flovo_token');
       setUser(null);

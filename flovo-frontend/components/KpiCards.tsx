@@ -1,6 +1,6 @@
 "use client";
 
-import { IconTrendingUp, IconTrendingDown, IconPackage, IconShoppingCart, IconUsers, IconClock } from '@tabler/icons-react';
+import { IconTrendingUp, IconTrendingDown, IconPackage, IconShoppingCart, IconClock } from '@tabler/icons-react';
 
 interface KpiCardProps {
   title: string;

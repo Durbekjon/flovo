@@ -6,7 +6,7 @@ export interface Order {
   customerName?: string;
   customerContact?: string;
   customerAddress?: string;
-  details: any;
+  details: { items?: string };
   createdAt: string;
   updatedAt: string;
 }

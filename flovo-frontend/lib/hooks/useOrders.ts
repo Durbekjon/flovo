@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { notifications } from '@mantine/notifications';
 import { OrdersService, type Order } from '../services/orders.service';
 
@@ -7,7 +7,7 @@ export function useOrders(page: number = 1, limit: number = 10) {
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
 
-  const fetchOrders = async (): Promise<void> => {
+  const fetchOrders = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
       console.log('Fetching orders...');
@@ -15,7 +15,7 @@ export function useOrders(page: number = 1, limit: number = 10) {
       console.log('Orders response:', response);
       setOrders(response.orders);
       setTotal(response.total);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching orders:', error);
       notifications.show({
         color: 'red',
@@ -25,7 +25,7 @@ export function useOrders(page: number = 1, limit: number = 10) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, limit]);
 
   const refreshOrders = () => {
     fetchOrders();
@@ -33,7 +33,7 @@ export function useOrders(page: number = 1, limit: number = 10) {
 
   useEffect(() => {
     fetchOrders();
-  }, [page, limit]);
+  }, [page, limit, fetchOrders]);
 
   return {
     orders,

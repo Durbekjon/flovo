@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRequireAuth } from "@/lib/hooks/useRequireAuth";
 import { useProducts } from "@/lib/hooks/useProducts";
-import { CreateProductRequest } from "@/lib/services/products.service";
+import { CreateProductRequest, Product } from "@/lib/services/products.service";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { IconPlus, IconPackage, IconEdit, IconTrash, IconCheck, IconX, IconCurrencyDollar, IconBox, IconEye, IconEyeOff } from '@tabler/icons-react';
 
@@ -160,7 +160,7 @@ export default function ProductsPage() {
   const { loading: authLoading } = useRequireAuth();
   const { products, loading, createProduct, updateProduct, deleteProduct } = useProducts();
   const [showForm, setShowForm] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   if (authLoading) {
     return (
@@ -180,7 +180,7 @@ export default function ProductsPage() {
     try {
       await createProduct(data);
       setShowForm(false);
-    } catch (error) {
+    } catch {
       // Error handling is done in the hook
     }
   };
@@ -191,7 +191,7 @@ export default function ProductsPage() {
     try {
       await updateProduct(editingProduct.id, data);
       setEditingProduct(null);
-    } catch (error) {
+    } catch {
       // Error handling is done in the hook
     }
   };
@@ -200,7 +200,7 @@ export default function ProductsPage() {
     if (confirm("Are you sure you want to delete this product?")) {
       try {
         await deleteProduct(productId);
-      } catch (error) {
+      } catch {
         // Error handling is done in the hook
       }
     }
@@ -247,7 +247,7 @@ export default function ProductsPage() {
           
           <button
             onClick={() => setShowForm(true)}
-            disabled={showForm || editingProduct}
+            disabled={showForm || !!editingProduct}
             className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             <IconPlus className="w-4 h-4" />
@@ -372,7 +372,7 @@ export default function ProductsPage() {
                         <div className="flex items-center gap-3">
                           <button
                             onClick={() => setEditingProduct(product)}
-                            disabled={showForm || editingProduct}
+                            disabled={showForm || !!editingProduct}
                             className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors duration-200 disabled:opacity-50"
                             title="Edit product"
                           >

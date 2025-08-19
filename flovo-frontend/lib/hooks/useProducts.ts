@@ -13,7 +13,7 @@ export function useProducts() {
       const response = await ProductsService.getProducts();
       setProducts(response);
       setInitialized(true);
-    } catch (error: any) {
+    } catch {
       notifications.show({
         color: 'red',
         title: 'Error',
@@ -34,11 +34,11 @@ export function useProducts() {
         title: 'Success!',
         message: 'Product created successfully',
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       notifications.show({
         color: 'red',
         title: 'Failed to create product',
-        message: error?.message ?? 'Unable to create product. Please try again.',
+        message: error instanceof Error ? error.message : 'Unable to create product. Please try again.',
       });
       throw error;
     } finally {
@@ -56,11 +56,11 @@ export function useProducts() {
         title: 'Success!',
         message: 'Product updated successfully',
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       notifications.show({
         color: 'red',
         title: 'Failed to update product',
-        message: error?.message ?? 'Unable to update product. Please try again.',
+        message: error instanceof Error ? error.message : 'Unable to update product. Please try again.',
       });
       throw error;
     } finally {
@@ -78,11 +78,11 @@ export function useProducts() {
         title: 'Success!',
         message: 'Product deleted successfully',
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       notifications.show({
         color: 'red',
         title: 'Failed to delete product',
-        message: error?.message ?? 'Unable to delete product. Please try again.',
+        message: error instanceof Error ? error.message : 'Unable to delete product. Please try again.',
       });
       throw error;
     } finally {

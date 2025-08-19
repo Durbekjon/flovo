@@ -23,10 +23,10 @@ export function useDashboard() {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.get('/orders/summary');
+      const response = await api<{ data: DashboardSummary }>('/orders/summary');
       setSummary(response.data);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to fetch dashboard data');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch dashboard data');
     } finally {
       setLoading(false);
     }

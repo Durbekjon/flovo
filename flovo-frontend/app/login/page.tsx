@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { IconBrandTelegram, IconRobot, IconArrowLeft, IconShield, IconCheck } from '@tabler/icons-react';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const { user, loading } = useAuth();
@@ -40,10 +41,10 @@ export default function LoginPage() {
       {/* Navigation */}
       <nav className="relative z-10 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <a href="/" className="flex items-center gap-3 group">
+          <Link href="/" className="flex items-center gap-3 group">
             <IconArrowLeft className="w-5 h-5 text-gray-600 group-hover:text-gray-800 transition-colors" />
             <span className="text-gray-600 group-hover:text-gray-800 transition-colors font-medium">Back to Home</span>
-          </a>
+          </Link>
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-sm">
               <IconRobot className="w-5 h-5 text-white" />
@@ -132,13 +133,13 @@ export default function LoginPage() {
               <p className="text-gray-600 mb-4">
                 Create your AI sales assistant in minutes. No coding required.
               </p>
-              <a 
+              <Link 
                 href="/" 
                 className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
               >
                 Learn more about Flovo
                 <IconArrowLeft className="w-4 h-4 rotate-180" />
-              </a>
+              </Link>
             </div>
           </div>
         </div>

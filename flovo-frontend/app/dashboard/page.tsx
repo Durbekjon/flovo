@@ -56,7 +56,7 @@ export default function DashboardPage() {
                   Business Overview 📊
                 </h1>
                 <p className="text-lg text-gray-600 max-w-2xl">
-                  Here's what's happening with your business today. Your AI assistant is working hard to help you grow.
+                  Here&apos;s what&apos;s happening with your business today. Your AI assistant is working hard to help you grow.
                 </p>
               </div>
               <div className="hidden lg:block">

@@ -19,7 +19,7 @@ export interface CreateProductRequest {
   isActive?: boolean;
 }
 
-export interface UpdateProductRequest extends Partial<CreateProductRequest> {}
+export type UpdateProductRequest = Partial<CreateProductRequest>;
 
 export class ProductsService {
   static async getProducts(): Promise<Product[]> {

@@ -195,7 +195,7 @@ export default function OrdersPage() {
                 <tbody className="bg-white divide-y divide-gray-100">
                   {orders.map((order) => {
                     const statusConfig = getStatusConfig(order.status);
-                    const details = order.details as any;
+                    const details = order.details as { items?: string };
                     const items = details?.items || 'Unknown Product';
                     
                     return (

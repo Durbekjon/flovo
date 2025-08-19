@@ -135,7 +135,7 @@ export function FlovosTip({
               <IconSparkles className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-gray-900">Flovo's Tip</h3>
+              <h3 className="text-lg font-bold text-gray-900">Flovo&apos;s Tip</h3>
               <p className="text-sm text-gray-500">AI-powered insights</p>
             </div>
           </div>

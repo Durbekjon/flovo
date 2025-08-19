@@ -27,7 +27,7 @@ class ApiClient {
     try {
       return await requestFn();
     } catch (error) {
-      if (attempts > 1 && this.isRetryableError(error)) {
+      if (attempts > 1 && this.isRetryableError(error as Error | { status?: number; message?: string })) {
         await this.delay(this.retryDelay);
         return this.retryRequest(requestFn, attempts - 1);
       }
@@ -35,13 +35,21 @@ class ApiClient {
     }
   }
 
-  private isRetryableError(error: any): boolean {
+  private isRetryableError(error: Error | { status?: number; message?: string }): boolean {
     // Retry on network errors or 5xx server errors
-    return (
-      error instanceof TypeError ||
-      (error.status >= 500 && error.status < 600) ||
-      error.message?.includes('Failed to fetch')
-    );
+    if (error instanceof TypeError) {
+      return true;
+    }
+    
+    if ('status' in error && error.status && error.status >= 500 && error.status < 600) {
+      return true;
+    }
+    
+    if ('message' in error && error.message && error.message.includes('Failed to fetch')) {
+      return true;
+    }
+    
+    return false;
   }
 
   private getAuthHeaders(): HeadersInit {
@@ -102,7 +110,7 @@ class ApiClient {
     });
   }
 
-  async post<T>(path: string, data?: any, options?: RequestInit): Promise<T> {
+  async post<T>(path: string, data?: unknown, options?: RequestInit): Promise<T> {
     return this.retryRequest(async () => {
       const response = await fetch(`${this.baseURL}${path}`, {
         method: "POST",
@@ -119,7 +127,7 @@ class ApiClient {
     });
   }
 
-  async put<T>(path: string, data?: any, options?: RequestInit): Promise<T> {
+  async put<T>(path: string, data?: unknown, options?: RequestInit): Promise<T> {
     return this.retryRequest(async () => {
       const response = await fetch(`${this.baseURL}${path}`, {
         method: "PUT",

@@ -41,7 +41,7 @@ export default function OnboardingPage() {
             <h2 className="text-2xl font-bold text-[var(--brand-primary)]">Flovo</h2>
           </div>
           <h1 className="text-3xl font-bold text-gray-900">Get Started</h1>
-          <p className="text-gray-600 mt-2">Let's set up your AI sales assistant</p>
+          <p className="text-gray-600 mt-2">Let&apos;s set up your AI sales assistant</p>
         </div>
 
         <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
@@ -77,7 +77,7 @@ export default function OnboardingPage() {
               <div>
                 <h3 className="text-xl font-semibold mb-2">Welcome to Flovo!</h3>
                 <p className="text-gray-600 max-w-md mx-auto">
-                  I'm your AI-powered sales assistant. I'll help you manage customer conversations, 
+                  I&apos;m your AI-powered sales assistant. I&apos;ll help you manage customer conversations, 
                   process orders, and grow your business through Telegram.
                 </p>
               </div>
@@ -85,7 +85,7 @@ export default function OnboardingPage() {
                 onClick={() => setActive(1)}
                 className="inline-flex items-center justify-center px-6 py-3 bg-[var(--brand-primary)] text-white font-medium rounded-lg hover:opacity-90 transition"
               >
-                Let's get started
+                Let&apos;s get started
               </button>
             </div>
           )}
@@ -98,7 +98,7 @@ export default function OnboardingPage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Create Your Bot</h3>
                 <p className="text-gray-600">
-                  Let's create a Telegram bot that will serve as your AI assistant
+                  Let&apos;s create a Telegram bot that will serve as your AI assistant
                 </p>
               </div>
 
@@ -116,11 +116,11 @@ export default function OnboardingPage() {
                     </li>
                     <li className="flex items-start space-x-2">
                       <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[var(--brand-primary)] text-white text-xs font-medium mt-0.5">3</span>
-                      <span>Choose a name for your bot (e.g., "MyStore Assistant")</span>
+                      <span>Choose a name for your bot (e.g., &quot;MyStore Assistant&quot;)</span>
                     </li>
                     <li className="flex items-start space-x-2">
                       <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[var(--brand-primary)] text-white text-xs font-medium mt-0.5">4</span>
-                      <span>Choose a username ending with "bot" (e.g., "mystoreassistant_bot")</span>
+                      <span>Choose a username ending with &quot;bot&quot; (e.g., &quot;mystoreassistant_bot&quot;)</span>
                     </li>
                     <li className="flex items-start space-x-2">
                       <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[var(--brand-primary)] text-white text-xs font-medium mt-0.5">5</span>
