@@ -12,12 +12,12 @@ async function bootstrap() {
   app.use(helmet());
 
   // Request ID middleware
-  app.use((req: any, res: any, next: any) => {
-    const requestId = req.headers['x-request-id'] || require('uuid').v4();
-    req.requestId = requestId;
-    res.setHeader('x-request-id', requestId);
-    next();
-  });
+  // app.use((req: any, res: any, next: any) => {
+  //   const requestId = req.headers['x-request-id'] || require('uuid').v4();
+  //   req.requestId = requestId;
+  //   res.setHeader('x-request-id', requestId);
+  //   next();
+  // });
 
   // CORS configuration
   // const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map((s) =>
