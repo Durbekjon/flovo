@@ -11,3 +11,52 @@
 
  ✓ Starting...
  ✓ Ready in 951ms
+ ⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+   ▲ Next.js 15.4.6 (Turbopack)
+   - Local:        http://localhost:3001
+   - Network:      http://192.168.0.226:3001
+   - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 1169ms
+ ⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+   ▲ Next.js 15.4.6 (Turbopack)
+   - Local:        http://localhost:3001
+   - Network:      http://192.168.0.226:3001
+   - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 1027ms
+ ⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+   ▲ Next.js 15.4.6 (Turbopack)
+   - Local:        http://localhost:3001
+   - Network:      http://192.168.0.226:3001
+   - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 993ms
+ ⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+[Error:   [31mx[0m Unexpected token `destination`. Expected ... , *,  (, [, :, , ?, =, an identifier, public, protected, private, readonly, <.
+    ,-[8:1]
+ [2m 5[0m |     return [
+ [2m 6[0m |       {
+ [2m 7[0m |         source: "/api/:path*",
+ [2m 8[0m | jhjh        destination: "https://flovo.preview.uz/:path*",
+    : [35;1m            ^^^^^^^^^^^[0m
+ [2m 9[0m |       },
+ [2m10[0m |     ];
+ [2m11[0m |   },
+    `----
+
+
+Caused by:
+    Syntax Error] {
+  code: 'GenericFailure'
+}
+
+Node.js v22.18.0
+[?25h

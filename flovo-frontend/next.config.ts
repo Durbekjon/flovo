@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "https://eventify.preview.uz/:path*",
+        destination: "https://flovo.preview.uz/:path*",
       },
     ];
   },
